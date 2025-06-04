@@ -105,19 +105,20 @@ df_old = df_old.withColumn("update_date", current_timestamp())
 
 # Prepare new records: add timestamps and surrogate key
 df_new = df_new.drop("old_dimCustomerKey", "old_customer_id", "old_update_date", "old_create_date")
-df_new = df_new.withColumn("update_date", current_timestamp()) \
+df_new = df_new.withColumn("update_date", current_timestamp())\
                .withColumn("create_date", current_timestamp())
 
 # Generate surrogate keys
 df_new = df_new.withColumn("dimCustomerKey", monotonically_increasing_id() + lit(1))
 
 # Add max surrogate key if not initial load
-if init_load_flag == 0:
+if init_load_flag == 1:
+    max_surrogate_key = 0
+    
+else:
     df_maxsurr = spark.sql("SELECT MAX(dimCustomerKey) AS max_surrogate_key FROM databricks_cata.gold.DimCustomers")
     max_surrogate_key = df_maxsurr.collect()[0]["max_surrogate_key"]
-    df_new = df_new.withColumn("dimCustomerKey", lit(max_surrogate_key) + col("dimCustomerKey"))
-else:
-    max_surrogate_key = 0
+df_new = df_new.withColumn("dimCustomerKey", lit(max_surrogate_key) + col("dimCustomerKey"))
 
 # Combine old and new records
 df_final = df_new.unionByName(df_old)
@@ -127,12 +128,12 @@ if spark.catalog.tableExists("databricks_cata.gold.DimCustomers"):
     dlt_obj = DeltaTable.forPath(spark, "abfss://gold@azuredatabrickse2e.dfs.core.windows.net/DimCustomers")
     
     dlt_obj.alias("trg").merge(df_final.alias("src"), "trg.dimCustomerKey = src.dimCustomerKey") \
-             .whenMatchedUpdateAll() \
-             .whenNotMatchedInsertAll() \
+             .whenMatchedUpdateAll()\
+             .whenNotMatchedInsertAll()\
              .execute()
 else:
     df_final.write \
-        .mode("overwrite") \
+        .mode("overwrite")\
         .option("path", "abfss://gold@azuredatabrickse2e.dfs.core.windows.net/DimCustomers") \
         .saveAsTable("databricks_cata.gold.DimCustomers")
 ```
