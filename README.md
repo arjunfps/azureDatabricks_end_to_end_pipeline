@@ -72,19 +72,16 @@ This section demonstrates how to implement Slowly Changing Dimensions (SCD) of T
 ### Implementation of SCD Type 1
 
 ``` python
-
 # Load existing dimension table (old records)
 if init_load_flag == 0:
     df_old = spark.sql('''
         SELECT dimCustomerKey, customer_id, create_date, update_date 
-        FROM databricks_cata.gold.DimCustomers
-    ''')
+        FROM databricks_cata.gold.DimCustomers ''')
 else:
     # Empty DataFrame for first load
     df_old = spark.sql('''
         SELECT 0 AS dimCustomerKey, 0 AS customer_id, 0 AS create_date, 0 AS update_date 
-        FROM databricks_cata.silver.customers_silver WHERE 1 = 0
-    ''')
+        FROM databricks_cata.silver.customers_silver WHERE 1 = 0 ''')
 
 # Rename old columns to avoid conflict during join
 df_old = df_old.withColumnRenamed("dimCustomerKey", "old_dimCustomerKey") \
@@ -138,26 +135,17 @@ else:
         .mode("overwrite") \
         .option("path", "abfss://gold@azuredatabrickse2e.dfs.core.windows.net/DimCustomers") \
         .saveAsTable("databricks_cata.gold.DimCustomers")
-
-
 ```
 
 ### Implementation of SCD Type 2 using DLT
 
 ``` python
-
-import dlt
-from pyspark.sql.functions import *
-
-# COMMAND ----------
 # Define Expectations for Data Quality
-
 my_rules = {
     "product_id_not_null": "product_id IS NOT NULL",
     "product_name_not_null": "product_name IS NOT NULL"
 }
 
-# COMMAND ----------
 # Streaming Table: Raw Product Stage with Expectations
 
 @dlt.table()
@@ -166,11 +154,9 @@ def DimProducts_Stage():
     """
     Ingests raw product data from Silver layer with quality checks.
     """
-    df =   spark.readStream.table("databricks_cata.silver.products_silver")
+    df = spark.readStream.table("databricks_cata.silver.products_silver")
     return df
     
-
-# COMMAND ----------
 # Streaming View: Intermediate view for transformation logic
 
 @dlt.view()
@@ -178,25 +164,19 @@ def DimProducts_View():
     """
     Intermediate streaming view for further transformations (if needed).
     """
-    df = spark.readStream.table("Live.DimProducts_Stage"
+    df = spark.readStream.table("Live.DimProducts_Stage")
     return df
 
-# COMMAND ----------
 #️ Create Target Streaming Table for SCD Type 2
-
 dlt.create_streaming_table("DimProducts")
 
-# COMMAND ----------
 # Apply Changes with SCD Type 2 Logic
-
 dlt.apply_changes(
     target="DimProducts",
     source="DimProducts_View",
     keys=["product_id"],
     sequence_by="product_id",  # Optional: use timestamp if available
-    stored_as_scd_type=2
-)
-
+    stored_as_scd_type=2)
 ```
 
 
