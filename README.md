@@ -65,6 +65,7 @@ The goal of this project is to:
 
 ---
 
+
 ## 🧾 Slowly Changing Dimension (SCD) Implementation
 
 This section demonstrates how to implement Slowly Changing Dimensions (SCD) of Type 1 and Type 2 in the context of this Azure Databricks pipeline. These techniques are essential for maintaining historical data integrity in dimension tables within a data warehouse
@@ -180,7 +181,21 @@ dlt.apply_changes(
     stored_as_scd_type=2)
 ```
 
+---
 
+## 🗃️ Pipeline Runs,  Logs, Event Views, History, DataBricks Catalog
+*1. End to End Pipeline Run*
+![Pipeline Runs](./img/pipeline_runs.png)
+
+*2. DLT Event Log*
+![DLT Event Log](./img/gold_product_eventlog.png)
+
+*3. DLT Query History*
+![DLT Query History](./img/gold_product_queryHistory.png)
+
+*4.  Catalog Tables*
+
+![DataBricks Catalog Tables](./img/dataBricksCatalog.png)
 
 
 
