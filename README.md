@@ -4,7 +4,7 @@ This project demonstrates an end-to-end data pipeline built using **Azure Databr
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 
 The goal of this project is to:
 
@@ -16,7 +16,7 @@ The goal of this project is to:
 
 ---
 
-## 🧩 Key Features
+## Key Features
 
 | Feature | Description |
 |--------|-------------|
@@ -28,14 +28,14 @@ The goal of this project is to:
 
 ---
 
-## 🖼️ Architecture Diagram
+## ️ Architecture Diagram
 
 ![Azure Architecture](./img/azure_arch.png)
 
 *Overview of the Azure-based pipeline: Data Lake → Bronze → Silver → Gold → Reporting Layer*
 
 ---
-## 🔄 DLT View
+##  DLT View
 
 ![DLT Render Graph](./img/DLT_render_graph.png)
 
@@ -50,7 +50,7 @@ The goal of this project is to:
 *Demonstration of how DLT ensures consistent and incremental data updates.*
 
 ---
-## 🔁 Pipeline View
+##  Pipeline View
 
 ![Pipeline View](./img/pipeline_view.png)
 
@@ -66,7 +66,7 @@ The goal of this project is to:
 ---
 
 
-## 🧾 Slowly Changing Dimension (SCD) Implementation
+## Slowly Changing Dimension (SCD) Implementation
 
 This section demonstrates how to implement Slowly Changing Dimensions (SCD) of Type 1 and Type 2 in the context of this Azure Databricks pipeline. These techniques are essential for maintaining historical data integrity in dimension tables within a data warehouse
 
